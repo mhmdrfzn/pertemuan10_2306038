@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Username',
-                        hintText: 'Minimal 3 karakter, hanya huruf, angka, underscore',
+                        hintText: 'Username',
                         prefixIcon: const Icon(Icons.account_circle),
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        hintText: 'Minimal 6 karakter (huruf + angka)',
+                        hintText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)),

@@ -1,9 +1,5 @@
 class ValidationService {
-  /// Validasi username
-  /// - Tidak boleh kosong
-  /// - Minimal 3 karakter
-  /// - Maksimal 20 karakter
-  /// - Hanya huruf, angka, dan underscore
+ 
   static String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
       return 'Username tidak boleh kosong';
@@ -26,11 +22,6 @@ class ValidationService {
     return null; // Valid
   }
 
-  /// Validasi password
-  /// - Tidak boleh kosong
-  /// - Minimal 6 karakter
-  /// - Maksimal 50 karakter
-  /// - Harus mengandung huruf dan angka
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password tidak boleh kosong';
