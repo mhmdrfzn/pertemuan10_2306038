@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306038/models/product_model.dart';
+
+import 'package:pertemuan10_2306038/widgets/product_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
-
+import 'product_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _username = '';
   List<ProductModel> products = [];
+  int totalProducts = 0;
   // late Future<String> _usernameFuture;
 
   @override
@@ -27,45 +30,14 @@ class _HomePageState extends State<HomePage> {
     // Simulasi delay untuk memuat data
     final prefs = await SharedPreferences.getInstance();
     List<String> productList = prefs.getStringList('products') ?? [];
+    totalProducts = productList.length;
 
     setState(() {
-      products = productList
-        .map((item) => ProductModel.fromJson(item))
-        .toList();
+      products = productList.reversed
+          .take(3)
+          .map((item) => ProductModel.fromJson(item))
+          .toList();
     });
-  }
-
-  Future<void> saveProducts() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> productList = products.map((item) => item.toJson()).toList();
-    await prefs.setStringList('products', productList);
-  }
-
-  Future<void> addProduct(ProductModel product) async {
-    setState(() {
-      products.add(product);
-    });
-    await saveProducts();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Produk berhasil ditambahkan')),
-      );
-  }
-
-  Future<void> updateProduct(int index, ProductModel Product) async {
-    setState(() {
-      products[index] = Product;
-    });
-    await saveProducts();
-  }
-
-  Future<void> deleteProduct(int index) async {
-    setState(() {
-      products.removeAt(index);
-    });
-    await saveProducts();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Produk berhasil dihapus')),
-    );
   }
 
   Future<String> getUser() async {
@@ -88,75 +60,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showForm ({ProductModel? product, int? index}) {
-    TextEditingController nameController = TextEditingController(
-      text: product?.name ?? ''
-      );
-    TextEditingController descriptionController = TextEditingController(
-      text: product?.description ?? ''
-      );
-    TextEditingController priceController = TextEditingController(
-      text: product != null ? product.price.toString() : ''
-      );
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(product == null ? 'Tambah Produk' : 'Edit Produk'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nama'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Deskripsi'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Harga'),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          // TextButton(
-          //   onPressed: () => Navigator.pop(context),
-          //   child: const Text('Batal'),
-          // ),
-          ElevatedButton(
-            onPressed: () {
-              final newProduct = ProductModel(
-                name: nameController.text,
-                description: descriptionController.text,
-                price: int.parse(priceController.text),
-              );
-              if (product == null) {
-                addProduct(newProduct);
-              } else {
-                updateProduct(index!, newProduct);
-              }
-              Navigator.pop(context);
-            },
-            child: Text(product == null ? 'Tambah' : 'Update'),
-            
-          ),
-        ],
-      ),
-    );
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 251, 255, 245),
-      appBar: AppBar(title: const Text('Home Page')),
+      backgroundColor: const Color.fromARGB(255, 210, 254, 143),
+      appBar: AppBar(
+        title: const Text(
+          'Home Page',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -164,142 +77,137 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 height: 150,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundImage: NetworkImage(
-                      'https://avatars.githubusercontent.com/u/12345678?v=4',
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hai, Selamat Datang, $_username!',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  _username,
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.verified,
-                                  size: 20,
-                                  color: Colors.green,
-                                ),
-                              ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 28,
+                      backgroundImage: NetworkImage(
+                        'https://avatars.githubusercontent.com/u/12345678?v=4',
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hai, Selamat Datang, $_username!',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
                             ),
-                            SizedBox(
-                              height: 42,
-                              width: 42,
-                              child: ElevatedButton(
-                                onPressed: logout,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red[400],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    _username,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  elevation: 2,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                child: const Icon(
-                                  Icons.logout,
-                                  size: 24,
-                                  color: Colors.white,
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    Icons.verified,
+                                    size: 20,
+                                    color: Colors.green,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 42,
+                                width: 42,
+                                child: ElevatedButton(
+                                  onPressed: logout,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red[400],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    elevation: 2,
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  child: const Icon(
+                                    Icons.logout,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Produk: $totalProducts',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ProductPage()),
+                      );
+                    },
+                    child: const Text('Lihat Selengkapnya'),
                   ),
                 ],
               ),
-              ),
+              SizedBox(height: 10),
               Expanded(
                 child: products.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'Belum ada produk',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(15),
-                            title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(product.description),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Rp ${product.price}'),
-                                const SizedBox(width: 10),
-                                IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.blue),
-                                  onPressed: () => showForm(product: product, index: index),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => deleteProduct(index),
-                                ),
-                              ],
-                            ),
-                          ),
+                    ? const Center(
+                        child: Text(
+                          'Belum ada produk',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(
+                          product: product,
                         );
-                      }
-                  )
-              )
-          ],
-        )
+
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        showForm();
-      },
-       child: const Icon(Icons.add),
-    ),
-  );
-}
+    );
+  }
 }
