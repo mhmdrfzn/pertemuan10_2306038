@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306038/models/product_model.dart';
 import 'package:pertemuan10_2306038/pages/product_detail_page.dart';
+import 'dart:convert';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -36,6 +37,14 @@ class ProductCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            product.image.isNotEmpty
+            ? Image.memory(
+              base64Decode(product.image),
+              width: 120,
+              height: 120,
+              fit: BoxFit.cover,
+            )
+            : const Icon(Icons.image, size: 120),
             Text(product.description),
             const SizedBox(height: 4),
             Text('Harga: Rp ${product.price}'),

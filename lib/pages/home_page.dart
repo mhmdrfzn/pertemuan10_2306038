@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pertemuan10_2306038/models/product_model.dart';
-
 import 'package:pertemuan10_2306038/widgets/product_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
@@ -197,10 +196,7 @@ class _HomePageState extends State<HomePage> {
                         itemCount: products.length,
                         itemBuilder: (context, index) {
                           final product = products[index];
-                          return ProductCard(
-                          product: product,
-                        );
-
+                          return ProductCard(product: product);
                         },
                       ),
               ),
